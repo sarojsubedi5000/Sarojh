@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>BS to AD Converter</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background: #f0f2f5;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .container {
+            width: 100%;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .converter-box {
+            background: #fff;
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+            width: 100%;
+            max-width: 500px;
+        }
+
+        h2 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 30px;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+        }
+
+        label {
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #444;
+        }
+
+        input[type="file"], select {
+            padding: 12px;
+            margin-bottom: 20px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+
+        input[type="file"]:focus, select:focus {
+            border-color: #17a2b8;
+            outline: none;
+        }
+
+        button {
+            padding: 12px;
+            background-color: #17a2b8;
+            color: white;
+            font-size: 16px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #117a8b;
+        }
+
+        .logout {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .logout a {
+            color: #dc3545;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .logout a:hover {
+            text-decoration: underline;
+        }
+
+        .flash-message {
+            color: red;
+            text-align: center;
+            margin-bottom: 15px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="converter-box">
+            <h2>Welcome, {{ username }}</h2>
+
+            <div class="logout">
+                <a href="{{ url_for('logout') }}">Logout</a>
+            </div>
+
+            {% with messages = get_flashed_messages() %}
+                {% if messages %}
+                    <div class="flash-message">{{ messages[0] }}</div>
+                {% endif %}
+            {% endwith %}
+
+            {% if needs_column_selection %}
+                <form method="POST" action="{{ url_for('convert_with_column') }}">
+                    <input type="hidden" name="filename" value="{{ file }}">
+                    
+                    <label>Select Column Containing BS Dates:</label>
+                    <select name="column" required>
+                        {% for col in columns %}
+                            <option value="{{ col }}">{{ col }}</option>
+                        {% endfor %}
+                    </select>
+
+                    <button type="submit">Convert and Download</button>
+                </form>
+            {% else %}
+                <form method="POST" enctype="multipart/form-data">
+                    <label>Upload Excel File:</label>
+                    <input type="file" name="file" accept=".xls,.xlsx" required>
+                    
+                    <button type="submit">Upload & Convert</button>
+                </form>
+            {% endif %}
+        </div>
+    </div>
+</body>
+</html>
